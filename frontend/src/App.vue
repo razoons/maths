@@ -1,8 +1,8 @@
 <template>
   <v-app>
-    <v-main class="pa-4">
+    <v-main class="pa-4" style="background-color:#0aaee3">
       <v-container>
-        <v-btn @click="fetchMessage">Call API</v-btn>
+        <v-btn @click="fetchMessage" size="x-large" rounded="pill" color="#f78d17" class="h-auto border-lg d-flex text-h1 elevation-24">JOUER</v-btn>
         <p v-if="message">{{ message }}</p>
       </v-container>
     </v-main>
