@@ -1,6 +1,9 @@
 <template>
   <v-app>
     <v-main class="pa-4 d-flex ga-16 flex-column align-stretch justify-center" style="background-color:#0aaee3">
+      <v-app-bar density="prominent" color="transparent" class="ma-0 pa-0" elevation="0">
+        <v-app-bar-title class="text-h1 text-center font-kid pa-0">Score: {{ score }}</v-app-bar-title>
+      </v-app-bar>
       <v-container>
         <v-sheet size="x-large" color="white"
           class="pa-16 font-kid text-h1 text-center elevation-24 border-lg rounded-xl">{{ problem }}</v-sheet>
@@ -41,6 +44,7 @@ const problem = ref('');
 const correctAnswer = ref(0);
 const responses = ref(['0', '0', '0', '0']);
 const selected = ref(null);
+const score=ref(0);
 
 const goToGame = () => {
   router.push('/game')
