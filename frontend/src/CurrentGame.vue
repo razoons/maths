@@ -1,56 +1,78 @@
 <template>
   <v-app>
+    <!-- Barre de score -->
+    <v-app-bar color="pink-darken-1 accent-4 " :height="160" class="border-lg rounded-xl" dark flat>
+      <v-container class="d-flex flex-column align-center justify-center w-100">
+        <!-- Score -->
+        <div class="text-h1 font-kid text-center">
+          Score : {{ score }}
+        </div>
+
+        <!-- Progress bar under the score -->
+        <v-progress-linear v-model="progress" color="yellow-lighten-1" :height="30" class="w-100 mt-4" />
+      </v-container>
+
+    </v-app-bar>
     <v-main class="pa-4 d-flex ga-16 flex-column align-stretch justify-center" style="background-color:#0aaee3">
-      <v-app-bar density="prominent" color="transparent" class="ma-0 pa-0" elevation="0">
-        <v-app-bar-title class="text-h1 text-center font-kid pa-0">Score: {{ score }}</v-app-bar-title>
-      </v-app-bar>
+      <!-- Question -->
       <v-container>
         <v-sheet size="x-large" color="white"
-          class="pa-16 font-kid text-h1 text-center elevation-24 border-lg rounded-xl">{{ problem }}</v-sheet>
+          class="pa-16 font-kid text-h1 text-center elevation-24 border-lg rounded-xl">
+          {{ problem }}
+        </v-sheet>
       </v-container>
+
+      <!-- Réponses -->
       <v-container>
         <v-row>
-          <v-col cols="12" md="6">
-            <v-btn @click="answer(responses[0])" size="x-large" rounded="pill" color="#f78d17"
-              class="h-auto border-lg d-flex text-h1 elevation-24 ma-auto w-100 font-kid" :style="selected === responses[0] ? (selected === correctAnswer ? 'background-color: #4caf50;' : 'background-color: #f44336;') : ''">{{ responses[0] }}</v-btn>
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-btn @click="answer(responses[1])" size="x-large" rounded="pill" color="#f78d17"
-              class="h-auto border-lg d-flex text-h1 elevation-24 ma-auto w-100 font-kid" :style="selected === responses[1] ? (selected === correctAnswer ? 'background-color: #4caf50;' : 'background-color: #f44336;') : ''">{{ responses[1] }}</v-btn>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12" md="6">
-            <v-btn @click="answer(responses[2])" size="x-large" rounded="pill" color="#f78d17"
-              class="h-auto border-lg d-flex text-h1 elevation-24 ma-auto w-100 font-kid" :style="selected === responses[2] ? (selected === correctAnswer ? 'background-color: #4caf50;' : 'background-color: #f44336;') : ''">{{ responses[2] }}</v-btn>
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-btn @click="answer(responses[3])" size="x-large" rounded="pill" color="#f78d17"
-              class="h-auto border-lg d-flex text-h1 elevation-24 ma-auto w-100 font-kid" :style="selected === responses[3] ? (selected === correctAnswer ? 'background-color: #4caf50;' : 'background-color: #f44336;') : ''">{{ responses[3] }}</v-btn>
+          <v-col cols="12" md="6" v-for="(resp, index) in responses" :key="index">
+            <v-btn @click="answer(resp)" size="x-large" rounded="pill" color="#f78d17"
+              class="h-auto border-lg d-flex text-h1 elevation-24 ma-auto w-100 font-kid"
+              :style="selected === resp ? (selected === correctAnswer ? 'background-color: #4caf50;' : 'background-color: #f44336;') : ''">
+              {{ resp }}
+            </v-btn>
           </v-col>
         </v-row>
       </v-container>
     </v-main>
+    <v-dialog v-model="showDialog" persistent>
+      <v-card class="rounded-xl pa-8" color="pink-darken-1 accent-4">
+        <v-card-title class="text-h1 text-center font-kid">
+          Fin du Jeu!
+        </v-card-title>
+
+        <v-card-text class="text-center text-h2 font-kid">
+          Ton score: <strong>{{ score }}</strong> / {{ nbrQuestions }}
+        </v-card-text>
+
+        <v-card-actions class="justify-center">
+          <v-btn size="x-large" rounded="pill"
+              class="h-auto border-lg d-flex text-h1 elevation-24 ma-auto w-90 font-kid" @click="restartGame" style="background-color: #f78d17;">
+            Recommencer
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-app>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 
-
+const nbrQuestions = 20;
+const currentQuestion = ref(0);
 const router = useRouter();
 const problem = ref('');
 const correctAnswer = ref(0);
 const responses = ref(['0', '0', '0', '0']);
 const selected = ref(null);
-const score=ref(0);
-
-const goToGame = () => {
-  router.push('/game')
-}
+const score = ref(0);
+const progress = computed(() => (currentQuestion.value / nbrQuestions * 100)); // percent (0 - 100)
+const showDialog = ref(false);
 
 function generateProblem() {
+  currentQuestion.value++;
   const num1 = Math.floor(Math.random() * 9) + 1;
   const num2 = Math.floor(Math.random() * 9) + 1;
 
@@ -76,11 +98,28 @@ function generateProblem() {
 
 function answer(selectedAnswer) {
   selected.value = selectedAnswer;
-  setTimeout(() => {
 
+
+  setTimeout(() => {
+    if (selectedAnswer === correctAnswer.value) {
+      score.value += 1;
+    }
     selected.value = null;
-    generateProblem();
+    if (currentQuestion.value >= nbrQuestions) {
+      showDialog.value = true;
+
+    } else {
+      // Generate next problem
+      generateProblem();
+    }
   }, 2000); // short delay to show color change
+}
+
+function restartGame(){
+  score.value=0;
+  currentQuestion.value=0;
+  showDialog.value = false;
+  generateProblem();
 }
 
 generateProblem();
