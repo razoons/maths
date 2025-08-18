@@ -26,7 +26,7 @@ export default defineConfig({
       ]
     }
   })],
-  base: '/maths/',
+  base: '/',
   build: {
     outDir: 'dist',
   }
