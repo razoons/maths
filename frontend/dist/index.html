@@ -9,10 +9,18 @@
   <link href="https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&display=swap" rel="stylesheet">
   <script type="module" crossorigin src="/assets/index-ri3EKjln.js"></script>
   <link rel="stylesheet" crossorigin href="/assets/index-CXFRhhBO.css">
+  <link rel="manifest" href="/manifest.json">
 </head>
 
 <body>
-  <div id="app"></div>
+  <div id="app"></div>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js')
+        .then(function () { console.log('Service Worker registered') })
+        .catch(err => console.error('Service Worker registration failed:', err));
+    }
+  </script>
 </body>
 
 </html>
