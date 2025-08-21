@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-main class="pa-4" style="background-color:#0aaee3">
+    <v-main class="pa-4 d-flex ga-16 flex-column align-stretch justify-center" style="background-color:#0aaee3">
       <v-container>
         <v-btn @click="goToGame" size="x-large" rounded="pill" color="#f78d17" class="h-auto border-lg d-flex text-h1 elevation-24 ma-auto font-kid">JOUER</v-btn>
       </v-container>

@@ -38,17 +38,23 @@
     <v-dialog v-model="showDialog" persistent>
       <v-card class="rounded-xl pa-8" color="pink-darken-1 accent-4">
         <v-card-title class="text-h1 text-center font-kid">
-          Fin du Jeu!
+          Bravo!
         </v-card-title>
 
         <v-card-text class="text-center text-h2 font-kid">
           Ton score: <strong>{{ score }}</strong> / {{ nbrQuestions }}
         </v-card-text>
 
-        <v-card-actions class="justify-center">
+        <v-card-actions class="d-flex flex-column ga-16 justify-center">
           <v-btn size="x-large" rounded="pill"
-              class="h-auto border-lg d-flex text-h1 elevation-24 ma-auto w-90 font-kid" @click="restartGame" style="background-color: #f78d17;">
+            class="h-auto border-lg d-flex text-h1 elevation-24 ma-auto w-90 font-kid" @click="restartGame"
+            style="background-color: #f78d17;">
             Recommencer
+          </v-btn>
+          <v-btn size="x-large" rounded="pill"
+            class="h-auto border-lg d-flex text-h1 elevation-24 ma-auto w-90 font-kid" @click="backToMenu"
+            style="background-color: #f78d17;">
+            Revenir au menu
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -59,6 +65,11 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+
+const params = new URLSearchParams(window.location.search);
+
+const difficulty = params.get("difficulty");
+const operation = params.get("operation");
 
 const nbrQuestions = 20;
 const currentQuestion = ref(0);
@@ -73,26 +84,77 @@ const showDialog = ref(false);
 
 function generateProblem() {
   currentQuestion.value++;
-  const num1 = Math.floor(Math.random() * 9) + 1;
-  const num2 = Math.floor(Math.random() * 9) + 1;
+  let num1, num2;
+  if (operation == 'addition') {
+    if (difficulty == 'facile') {
+      // Easy addition: numbers between 1 and 9
+      num1 = Math.floor(Math.random() * 9) + 1;
+      num2 = Math.floor(Math.random() * 9) + 1;
 
-  problem.value = `${num1} + ${num2}`;
+    } else if (difficulty == 'moyen') {
+      // Medium addition: numbers between 10 and 99
+      num1 = Math.floor(Math.random() * 90) + 10;
+      num2 = Math.floor(Math.random() * 9) + 1;
 
-  const correctAnswerTemp = num1 + num2;
-  correctAnswer.value = correctAnswerTemp;
-  const incorrectAnswers = new Set();
+    } else if (difficulty == 'difficile') {
+      // Hard addition: numbers between 100 and 999
+      num1 = Math.floor(Math.random() * 90) + 10;
+      num2 = Math.floor(Math.random() * 90) + 10;
 
-  while (incorrectAnswers.size < 3) {
-    const offset = Math.floor(Math.random() * 3) + 1;
-    const sign = Math.random() < 0.5 ? -1 : 1;
-    const wrong = correctAnswerTemp + sign * offset;
-    if (wrong !== correctAnswerTemp && wrong > 0) {
-      incorrectAnswers.add(wrong);
     }
+    problem.value = `${num1} + ${num2}`;
+    const correctAnswerTemp = num1 + num2;
+    correctAnswer.value = correctAnswerTemp;
+    const incorrectAnswers = new Set();
+
+    while (incorrectAnswers.size < 3) {
+      const offset = Math.floor(Math.random() * 3) + 1;
+      const sign = Math.random() < 0.5 ? -1 : 1;
+      const wrong = correctAnswerTemp + sign * offset;
+      if (wrong !== correctAnswerTemp && wrong > 0) {
+        incorrectAnswers.add(wrong);
+      }
+    }
+
+    const allAnswers = [correctAnswerTemp, ...incorrectAnswers];
+    responses.value = allAnswers.sort(() => Math.random() - 0.5);
+
+  } else if (operation == 'soustraction') {
+    if (difficulty == 'facile') {
+      // Easy subtraction: numbers between 1 and 9
+      num1 = Math.floor(Math.random() * 9) + 1;
+      num2 = Math.floor(Math.random() * num1) + 1; // ensure num2 is less than or equal to num1
+
+    } else if (difficulty == 'moyen') {
+      // Medium subtraction: numbers between 10 and 99
+      num1 = Math.floor(Math.random() * 90) + 10;
+      num2 = Math.min((Math.floor(Math.random() * 9) + 1), num1);
+
+    } else if (difficulty == 'difficile') {
+      // Hard subtraction: numbers between 100 and 999
+      num1 = Math.floor(Math.random() * 90) + 10;
+      num2 = Math.floor(Math.random() * num1) + 1;
+    }
+    problem.value = `${num1} - ${num2}`;
+    const correctAnswerTemp = num1 - num2;
+    correctAnswer.value = correctAnswerTemp;
+    const incorrectAnswers = new Set();
+
+    while (incorrectAnswers.size < 3) {
+      const offset = Math.floor(Math.random() * 3) + 1;
+      const sign = Math.random() < 0.5 ? -1 : 1;
+      const wrong = correctAnswerTemp + sign * offset;
+      if (wrong !== correctAnswerTemp && wrong > 0) {
+        incorrectAnswers.add(wrong);
+      }
+    }
+
+    const allAnswers = [correctAnswerTemp, ...incorrectAnswers];
+    responses.value = allAnswers.sort(() => Math.random() - 0.5);
+
   }
 
-  const allAnswers = [correctAnswerTemp, ...incorrectAnswers];
-  responses.value = allAnswers.sort(() => Math.random() - 0.5);
+
 
 }
 
@@ -115,11 +177,15 @@ function answer(selectedAnswer) {
   }, 2000); // short delay to show color change
 }
 
-function restartGame(){
-  score.value=0;
-  currentQuestion.value=0;
+function restartGame() {
+  score.value = 0;
+  currentQuestion.value = 0;
   showDialog.value = false;
   generateProblem();
+}
+
+function backToMenu() {
+  router.push('/');
 }
 
 generateProblem();
