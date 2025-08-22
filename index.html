@@ -30,6 +30,14 @@
         const { createApp, ref, onMounted } = Vue;
         const { createVuetify } = Vuetify;
 
+        const goToGame = () => {
+            window.location.href = "/game";
+        }
+
+        const app = createApp({
+            setup() {
+            }
+        });
 
         const vuetify = createVuetify();
         app.use(vuetify);
