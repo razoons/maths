@@ -11,7 +11,7 @@
     <meta name="theme-color" content="#0ea5e9">
     <link rel="icon" href="./icon-192.png" sizes="192x192">
     <link rel="apple-touch-icon" href="./icon-192.png">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/vuetify@3.5.4/dist/vuetify.min.css" rel="stylesheet">
@@ -33,8 +33,8 @@
         const { createApp, ref, onMounted } = Vue;
         const { createVuetify } = Vuetify;
 
-        const goToGame = () => {
-            window.location.href = "/game";
+        function goToGame() {
+            window.location.href = "./game.html";
         }
 
         const app = createApp({
