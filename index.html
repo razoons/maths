@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Jeux de Maths</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&display=swap" rel="stylesheet">
+    <link rel="manifest" href="./manifest.webmanifest">
+    <meta name="theme-color" content="#0ea5e9">
+    <link rel="icon" href="./icon-192.png" sizes="192x192">
+    <link rel="apple-touch-icon" href="./icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+</head>
+
+<body>
+    <div id="app">
+        <v-app>
+            <v-main class="pa-4 d-flex ga-16 flex-column align-stretch justify-center" style="background-color:#0aaee3">
+                <v-container>
+                    <v-btn @click="goToGame" size="x-large" rounded="pill" color="#f78d17"
+                        class="h-auto border-lg d-flex text-h1 elevation-24 ma-auto font-kid">JOUER</v-btn>
+                </v-container>
+            </v-main>
+        </v-app>
+    </div>
+    <script>
+        const { createApp, ref, onMounted } = Vue;
+        const { createVuetify } = Vuetify;
+
+
+        const vuetify = createVuetify();
+        app.use(vuetify);
+        app.mount('#app');
+    </script>
+    <script>
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", async () => {
+                try {
+                    const reg = await navigator.serviceWorker.register("./service-worker.js", { scope: "/" });
+                    // (optionnel) auto-update du SW
+                    setInterval(() => reg.update(), 60 * 60 * 1000); // toutes les heures
+
+                    // (optionnel) activer la nouvelle version immédiatement
+                    navigator.serviceWorker.addEventListener("controllerchange", () => {
+                        // tu peux rafraîchir l’UI ici si besoin
+                    });
+                } catch (e) {
+                    console.error("SW registration failed", e);
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>
