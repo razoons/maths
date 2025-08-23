@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Jeux de Maths</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@3.5.4/dist/vuetify.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@3.5.4/dist/vuetify.min.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <v-app>
+            <v-main class="pa-4 d-flex ga-16 flex-column align-stretch justify-center" style="background-color:#0aaee3">
+                <v-container>
+                    <v-btn-toggle v-model="operation" mandatory class="h-auto w-100 pa-8">
+                        <v-btn value="addition" rounded="pill" color="#f78d17"
+                            class="font-kid h-auto border-lg d-flex text-h2 elevation-12 ma-auto">Addition</v-btn>
+                        <v-btn value="soustraction" rounded="pill" color="#f78d17"
+                            class="font-kid h-auto border-lg d-flex text-h2 elevation-12 ma-auto">Soustraction</v-btn>
+                    </v-btn-toggle>
+                    <v-btn-toggle v-model="difficulty" mandatory class="h-auto w-100 pa-8">
+                        <v-btn value="facile" size="x-large" rounded="pill" color="#f78d17"
+                            class="font-kid h-auto border-lg d-flex text-h2 elevation-12 ma-auto">Facile</v-btn>
+                        <v-btn value="moyen" size="x-large" rounded="pill" color="#f78d17"
+                            class="font-kid h-auto border-lg d-flex text-h2 elevation-12 ma-auto">Moyen</v-btn>
+                        <v-btn value="difficile" size="x-large" rounded="pill" color="#f78d17"
+                            class="font-kid h-auto border-lg d-flex text-h2 elevation-12 ma-auto">Difficile</v-btn>
+                    </v-btn-toggle>
+                    <v-btn size="x-large" rounded="pill"
+                        class="h-auto border-lg d-flex text-h1 elevation-24 ma-auto w-90 font-kid mt-16"
+                        @click="goToGame" color="#D81B60">
+                        Commencer le jeu
+                    </v-btn>
+                </v-container>
+            </v-main>
+        </v-app>
+    </div>
+    <script>
+        const { createApp, ref, onMounted } = Vue;
+        const { createVuetify } = Vuetify;
+
+        const app = createApp({
+            setup() {
+                function goToGame() {
+                    window.location.href = '/current?operation=' + operation.value + '&difficulty=' + difficulty.value;
+                }
+                const operation = ref("addition");
+                const difficulty = ref("facile");
+
+                return { goToGame, operation, difficulty };
+            }
+        });
+
+        const vuetify = createVuetify();
+        app.use(vuetify);
+        app.mount('#app');
+    </script>
+    <script>
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", async () => {
+                try {
+                    const reg = await navigator.serviceWorker.register("./service-worker.js", { scope: "/" });
+                    // (optionnel) auto-update du SW
+                    setInterval(() => reg.update(), 60 * 60 * 1000); // toutes les heures
+
+                    // (optionnel) activer la nouvelle version immédiatement
+                    navigator.serviceWorker.addEventListener("controllerchange", () => {
+                        // tu peux rafraîchir l’UI ici si besoin
+                    });
+                } catch (e) {
+                    console.error("SW registration failed", e);
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>
