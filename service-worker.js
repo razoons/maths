@@ -3,8 +3,9 @@ const CACHE_NAME = "pwa-cache-v1";
 const APP_SHELL = [
   "./",                // si ton serveur renvoie l'index sur /
   "./index.html",
+  "./game.html",
+  "./current.html",
   "./styles.css",
-  "./app.js",
   "./manifest.webmanifest",
   "./icon-192.png",
   "./icon-512.png"
