@@ -47,7 +47,7 @@
         const app = createApp({
             setup() {
                 function goToGame() {
-                    window.location.href = '/current?operation=' + operation.value + '&difficulty=' + difficulty.value;
+                    window.location.href = './current.html?operation=' + operation.value + '&difficulty=' + difficulty.value;
                 }
                 const operation = ref("addition");
                 const difficulty = ref("facile");
