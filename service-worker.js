@@ -1,21 +1,30 @@
-/* v1.0.0 */
+/* v1.0.1 */
 const CACHE_NAME = "pwa-cache-v1";
+
+/**
+ * ⚠️ IMPORTANT : 
+ * comme ton site est servi depuis /maths/,
+ * toutes les ressources doivent être référencées avec ce chemin.
+ */
 const APP_SHELL = [
-  "./",                // si ton serveur renvoie l'index sur /
-  "./index.html",
-  "./game.html",
-  "./current.html",
-  "./styles.css",
-  "./manifest.webmanifest",
-  "./icon-192.png",
-  "./icon-512.png"
+  "/maths/",                  // page d'accueil
+  "/maths/index.html",
+  "/maths/game.html",
+  "/maths/current.html",
+  "/maths/styles.css",
+  "/maths/manifest.webmanifest",
+  "/maths/icon-192.png",
+  "/maths/icon-512.png"
 ];
+
+// (optionnel) page de secours offline
+const OFFLINE_FALLBACK_PAGE = "/maths/index.html";
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
     (async () => {
       const cache = await caches.open(CACHE_NAME);
-      await cache.addAll([...APP_SHELL, OFFLINE_FALLBACK_PAGE].filter(Boolean));
+      await cache.addAll(APP_SHELL);
       await self.skipWaiting();
     })()
   );
@@ -24,7 +33,7 @@ self.addEventListener("install", (event) => {
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     (async () => {
-      // Supprime les anciens caches
+      // Supprimer anciens caches
       const keys = await caches.keys();
       await Promise.all(
         keys.map((key) => (key !== CACHE_NAME ? caches.delete(key) : null))
@@ -35,26 +44,24 @@ self.addEventListener("activate", (event) => {
 });
 
 /**
- * Stratégies:
- * - Navigations (HTML): network-first avec repli offline
- * - Static assets (CSS/JS/icônes): cache-first avec mise à jour en arrière-plan
- * - Autres requêtes: network-first simple
+ * Stratégies de cache :
+ * - HTML (navigate) : network-first, fallback offline
+ * - Assets statiques : cache-first, mise à jour en arrière-plan
+ * - Autres : network-first basique
  */
 self.addEventListener("fetch", (event) => {
   const req = event.request;
 
-  // 1) Navigations (documents HTML)
+  // 1) Navigations (HTML)
   if (req.mode === "navigate") {
     event.respondWith(
       (async () => {
         try {
           const fresh = await fetch(req);
-          // Optionnel: met en cache la version fraîche
           const cache = await caches.open(CACHE_NAME);
           cache.put(req, fresh.clone());
           return fresh;
         } catch (err) {
-          // Offline fallback
           const cache = await caches.open(CACHE_NAME);
           const cached = await cache.match(req);
           return cached || cache.match(OFFLINE_FALLBACK_PAGE);
@@ -64,28 +71,29 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // 2) Static assets: cache-first + revalidation en arrière-plan
+  // 2) Assets statiques
   if (["style", "script", "image", "font"].includes(req.destination)) {
     event.respondWith(
       (async () => {
         const cache = await caches.open(CACHE_NAME);
         const cached = await cache.match(req);
+
         const networkPromise = fetch(req)
           .then((res) => {
-            // Ne mets en cache que si OK
-            if (res && res.status === 200) cache.put(req, res.clone());
+            if (res && res.status === 200) {
+              cache.put(req, res.clone());
+            }
             return res;
           })
           .catch(() => null);
 
-        // Renvoie le cache si dispo, sinon le réseau
         return cached || (await networkPromise) || new Response(null, { status: 504 });
       })()
     );
     return;
   }
 
-  // 3) Par défaut: network-first basique
+  // 3) Par défaut : network-first
   event.respondWith(
     (async () => {
       try {
@@ -99,7 +107,7 @@ self.addEventListener("fetch", (event) => {
   );
 });
 
-// Permettre une mise à jour immédiate via postMessage({type:"SKIP_WAITING"})
+// Mise à jour immédiate via postMessage
 self.addEventListener("message", (event) => {
   if (event.data && event.data.type === "SKIP_WAITING") {
     self.skipWaiting();
