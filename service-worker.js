@@ -63,8 +63,7 @@ self.addEventListener("fetch", (event) => {
           return fresh;
         } catch (err) {
           const cache = await caches.open(CACHE_NAME);
-          const cached = await cache.match(req);
-          return cached || cache.match(OFFLINE_FALLBACK_PAGE);
+          return (await cache.match(req)) || (await cache.match(OFFLINE_FALLBACK_PAGE));
         }
       })()
     );
@@ -78,16 +77,14 @@ self.addEventListener("fetch", (event) => {
         const cache = await caches.open(CACHE_NAME);
         const cached = await cache.match(req);
 
-        const networkPromise = fetch(req)
-          .then((res) => {
-            if (res && res.status === 200) {
-              cache.put(req, res.clone());
-            }
-            return res;
-          })
-          .catch(() => null);
-
-        return cached || (await networkPromise) || new Response(null, { status: 504 });
+        if (cached) return cached;
+        try {
+          const fresh = await fetch(req);
+          cache.put(req, fresh.clone());
+          return fresh;
+        } catch {
+          return cached || new Response(null, { status: 504 });
+        }
       })()
     );
     return;
@@ -100,16 +97,8 @@ self.addEventListener("fetch", (event) => {
         return await fetch(req);
       } catch {
         const cache = await caches.open(CACHE_NAME);
-        const cached = await cache.match(req);
-        return cached || new Response(null, { status: 504 });
+        return (await cache.match(req)) || new Response(null, { status: 504 });
       }
     })()
   );
-});
-
-// Mise à jour immédiate via postMessage
-self.addEventListener("message", (event) => {
-  if (event.data && event.data.type === "SKIP_WAITING") {
-    self.skipWaiting();
-  }
 });
