@@ -66,6 +66,12 @@
                 }
             });
         }
+
+        window.addEventListener("beforeinstallprompt", (e) => {
+            console.log("✅ beforeinstallprompt fired");
+            e.preventDefault(); // tu peux aussi stocker l’event et proposer un bouton custom
+        });
+
     </script>
 </body>
 
