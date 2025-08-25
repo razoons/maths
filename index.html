@@ -7,10 +7,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&display=swap" rel="stylesheet">
-    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="manifest" href="/maths/manifest.webmanifest">
     <meta name="theme-color" content="#0ea5e9">
-    <link rel="icon" href="./icon-192.png" sizes="192x192">
-    <link rel="apple-touch-icon" href="./icon-192.png">
+    <link rel="icon" href="/maths/icon-192.png" sizes="192x192">
+    <link rel="apple-touch-icon" href="/maths/icon-192.png">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
@@ -39,7 +39,7 @@
         const app = createApp({
             setup() {
                 function goToGame() {
-                    window.location.href = "./game.html";
+                    window.location.href = "/maths/game.html";
                 }
                 return { goToGame };
             }
@@ -53,7 +53,7 @@
         if ("serviceWorker" in navigator) {
             window.addEventListener("load", async () => {
                 try {
-                    const reg = await navigator.serviceWorker.register("./service-worker.js", { scope: "./" });
+                    const reg = await navigator.serviceWorker.register("/maths/service-worker.js", { scope: "/maths/" });
                     // (optionnel) auto-update du SW
                     setInterval(() => reg.update(), 60 * 60 * 1000); // toutes les heures
 
