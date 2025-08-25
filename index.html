@@ -70,6 +70,27 @@
         window.addEventListener("beforeinstallprompt", (e) => {
             console.log("✅ beforeinstallprompt fired");
             e.preventDefault(); // tu peux aussi stocker l’event et proposer un bouton custom
+
+            deferredPrompt = e;
+
+            // Crée un bouton Installer
+            const btn = document.createElement("button");
+            btn.textContent = "📲 Installer l'application";
+            btn.style.position = "fixed";
+            btn.style.bottom = "20px";
+            btn.style.right = "20px";
+            btn.style.padding = "10px";
+            btn.style.zIndex = 9999;
+
+            btn.addEventListener("click", async () => {
+                deferredPrompt.prompt(); // 🔥 déclenche l’installation
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log("Résultat installation :", outcome);
+                deferredPrompt = null;
+                btn.remove(); // supprime le bouton après
+            });
+
+            document.body.appendChild(btn);
         });
 
     </script>
