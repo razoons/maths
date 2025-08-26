@@ -52,6 +52,10 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const req = event.request;
 
+  if (req.url.includes("current.html")) {
+    req = new Request("/maths/current.html");
+  }
+
   // 1) Navigations (HTML)
   if (req.mode === "navigate") {
     event.respondWith(
