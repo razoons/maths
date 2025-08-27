@@ -167,9 +167,50 @@
                         const allAnswers = [correctAnswerTemp, ...incorrectAnswers];
                         responses.value = allAnswers.sort(() => Math.random() - 0.5);
 
+                    } else if (operation == 'probleme') {
+
+                        const prenoms = [{ "prenom": "Marie", "genre": "f" }, { "prenom": "Antoine", "genre": "m" }, { "prenom": "Luc", "genre": "m" }, { "prenom": "Sophie", "genre": "f" }, { "prenom": "Julien", "genre": "m" }, { "prenom": "Clara", "genre": "f" }, { "prenom": "Maxime", "genre": "m" }, { "prenom": "Emma", "genre": "f" }, { "prenom": "Leo", "genre": "m" }, { "prenom": "Chloé", "genre": "f" }, { "prenom": "Thomas", "genre": "m" }, { "prenom": "Camille", "genre": "f" }, { "prenom": "Mathis", "genre": "m" }, { "prenom": "Lena", "genre": "f" }, { "prenom": "Gabriel", "genre": "m" }, { "prenom": "Manon", "genre": "f" }, { "prenom": "Arthur", "genre": "m" }, { "prenom": "Julie", "genre": "f" }];
+                        const objets = ["pommes", "poires", "poireaux", "stylos", "cahiers", "ballons", "voitures", "poupées", "livres", "crayons", "gâteaux", "bonbons", "chocolats", "billes", "cartables", "ordinateurs", "tablettes", "téléphones", "vélos"];
+
+                        const { prenom, genre } = prenoms[Math.floor(Math.random() * prenoms.length)];
+                        const objet = objets[Math.floor(Math.random() * objets.length)];
+
+                        const a = Math.floor(Math.random() * 5) + 5;
+                        const b = Math.floor(Math.random() * 10) + 1;
+                        const c = Math.min(Math.floor(Math.random() * 10) + 1, a - 1);
+
+                        // Genre
+                        const sujet = genre === "m" ? "Il" : "Elle";
+                        const pronom = genre === "m" ? "il" : "elle";
+
+
+                        // Modèles de phrases
+                        const templates = [
+                            { "phrase": `${prenom} a ${a} ${objet}. ${sujet} en achète ${b} de plus. Combien de ${objet} a-t-${pronom} maintenant ?`, "resultat": a + b },
+                            { "phrase": `${prenom} a ${a} ${objet}. ${sujet} en donne ${c} à son ami. Combien de ${objet} lui reste-t-${pronom} ?`, "resultat": a - c },
+                            { "phrase": `${prenom} a ${a} ${objet}. ${sujet} en voudrait ${a + b}. Combien doit-${pronom} en acheter ?`, "resultat": b },
+                            { "phrase": `${prenom} a ${a} ${objet}. Son ami en a ${a + b}. Combien son ami en a-t-il de plus ?`, "resultat": b },
+                        ];
+
+                        const probleme_instance = templates[Math.floor(Math.random() * templates.length)];
+                        problem.value = probleme_instance.phrase;
+                        const correctAnswerTemp = probleme_instance.resultat;
+                        correctAnswer.value = correctAnswerTemp;
+                        const incorrectAnswers = new Set();
+
+                        while (incorrectAnswers.size < 3) {
+                            const offset = Math.floor(Math.random() * 3) + 1;
+                            const sign = Math.random() < 0.5 ? -1 : 1;
+                            const wrong = correctAnswerTemp + sign * offset;
+                            if (wrong !== correctAnswerTemp && wrong > 0) {
+                                incorrectAnswers.add(wrong);
+                            }
+                        }
+
+                        const allAnswers = [correctAnswerTemp, ...incorrectAnswers];
+                        responses.value = allAnswers.sort(() => Math.random() - 0.5);
+
                     }
-
-
 
                 }
 
