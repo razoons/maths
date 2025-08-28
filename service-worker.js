@@ -1,5 +1,5 @@
 /* v1.2.0 — offline robuste (ignore les query params pour les HTML) */
-const CACHE_NAME = "pwa-cache-v3";
+const CACHE_NAME = "pwa-cache-v4";
 const APP_SHELL = [
   "/maths/",
   "/maths/index.html",
