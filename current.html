@@ -81,7 +81,7 @@
         const params = new URLSearchParams(window.location.search);
         const difficulty = params.get("difficulty");
         const operation = params.get("operation");
-        const nbrQuestions = 2;
+        const nbrQuestions = 20;
 
 
         const app = createApp({
@@ -219,9 +219,9 @@
                 }
 
                 function giveRewards(score) {
-                    if (score == 2) {
+                    if (score == 20) {
                         rewardsWon = 2;
-                    } else if (score >= 1) {
+                    } else if (score >= 18) {
                         rewardsWon = 1;
                     } else {
                         rewardsWon = 0;
