@@ -16,37 +16,27 @@
 <body>
     <div id="app">
         <v-app>
-            <v-main class="pa-4 d-flex ga-16 flex-column align-stretch justify-center h-100" style="background-color:#0aaee3">
+            <v-main class="pa-4 d-flex flex-column align-stretch justify-center h-100"
+                style="background-color:#0aaee3;color:white">
                 <!-- Row 1 -->
-                <div class="flex-grow-1 d-flex align-center justify-center flex-warp">
-                    <v-btn-toggle v-model="operation" mandatory class="h-auto w-100 pa-8 ga-16" style="flex-wrap: wrap;">
-                        <v-btn value="addition" rounded="pill" color="#f78d17"
-                            class="font-kid h-auto border-lg d-flex text-h2 elevation-12 ma-auto">Addition</v-btn>
-                        <v-btn value="soustraction" rounded="pill" color="#f78d17"
-                            class="font-kid h-auto border-lg d-flex text-h2 elevation-12 ma-auto">Soustraction</v-btn>
-                        <v-btn value="probleme" rounded="pill" color="#f78d17"
-                            class="font-kid h-auto border-lg d-flex text-h2 elevation-12 ma-auto">Problème</v-btn>
-                    </v-btn-toggle>
+                <div class="flex-grow-1 p-16 d-flex flex-row align-center justify-start">
+                    <img src="./etoile.png" style="height:500px" />
+                    <span class="text-h1 font-kid">x{{stars}}</span>
+                </div>
+                <div class="flex-grow-1 p-4 d-flex flex-row align-center justify-start">
+                    <img src="./fee.png" style="height:500px" />
+                    <span class="text-h1 font-kid">x{{fairies}}</span>
+                </div>
+                <div class="flex-grow-1 ma-4 d-flex flex-row align-center justify-start">
+                    <img src="./licorne.png" style="height:500px" />
+                    <span class="text-h1 font-kid">x{{unicorns}}</span>
                 </div>
 
-                <!-- Row 2 -->
-                <div class="flex-grow-1 d-flex align-center justify-center">
-                    <v-btn-toggle v-model="difficulty" mandatory class="h-auto w-100 pa-8">
-                        <v-btn value="facile" size="x-large" rounded="pill" color="#f78d17"
-                            class="font-kid h-auto border-lg d-flex text-h2 elevation-12 ma-auto">Facile</v-btn>
-                        <v-btn value="moyen" size="x-large" rounded="pill" color="#f78d17"
-                            class="font-kid h-auto border-lg d-flex text-h2 elevation-12 ma-auto">Moyen</v-btn>
-                        <v-btn value="difficile" size="x-large" rounded="pill" color="#f78d17"
-                            class="font-kid h-auto border-lg d-flex text-h2 elevation-12 ma-auto">Difficile</v-btn>
-                    </v-btn-toggle>
-                </div>
-
-                <!-- Row 3 -->
                 <div class="flex-grow-1 d-flex align-center justify-center">
                     <v-btn size="x-large" rounded="pill"
                         class="h-auto border-lg d-flex text-h1 elevation-24 ma-auto w-90 font-kid" @click="goToGame"
-                        color="#D81B60">
-                        Commencer le jeu
+                        color="#f78d17">
+                        Revenir au menu
                     </v-btn>
                 </div>
             </v-main>
@@ -58,13 +48,16 @@
 
         const app = createApp({
             setup() {
-                function goToGame() {
-                    window.location.href = './current.html?operation=' + operation.value + '&difficulty=' + difficulty.value;
-                }
-                const operation = ref("addition");
-                const difficulty = ref("facile");
+                const rewards = JSON.parse(localStorage.getItem('rewards')) || { stars: 0, fairies: 0, unicorns: 0 };
+                const stars = ref(rewards.stars);
+                const fairies = ref(rewards.fairies);
+                const unicorns = ref(rewards.unicorns);
 
-                return { goToGame, operation, difficulty };
+                function goToGame() {
+                    window.location.href = './index.html';
+                }
+
+                return { goToGame, stars, fairies, unicorns };
             }
         });
 

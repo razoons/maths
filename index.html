@@ -22,11 +22,24 @@
 <body>
     <div id="app">
         <v-app>
-            <v-main class="pa-4 d-flex ga-16 flex-column align-stretch justify-center" style="background-color:#0aaee3">
-                <v-container>
-                    <v-btn @click="goToGame" size="x-large" rounded="pill" color="#f78d17"
-                        class="h-auto border-lg d-flex text-h1 elevation-24 ma-auto font-kid">JOUER</v-btn>
-                </v-container>
+            <v-main class="pa-4 d-flex ga-16 flex-column align-stretch justify-center h-100"
+                style="background-color:#0aaee3">
+
+                <div class="flex-grow-1 d-flex align-center justify-center">
+                    <v-btn size="x-large" rounded="pill"
+                        class="h-auto border-lg d-flex text-h1 elevation-24 ma-auto w-90 font-kid" @click="goToGame"
+                        color="#f78d17">
+                        Jouer
+                    </v-btn>
+                </div>
+
+                <div class="flex-grow-1 d-flex align-center justify-center">
+                    <v-btn size="x-large" rounded="pill"
+                        class="h-auto border-lg d-flex text-h1 elevation-24 ma-auto w-90 font-kid" @click="goToRewards"
+                        color="#f78d17">
+                        Mes récompenses
+                    </v-btn>
+                </div>
             </v-main>
         </v-app>
     </div>
@@ -39,9 +52,12 @@
         const app = createApp({
             setup() {
                 function goToGame() {
-                    window.location.href = "/maths/game.html";
+                    window.location.href = "./game.html";
                 }
-                return { goToGame };
+                function goToRewards() {
+                    window.location.href = "./rewards.html";
+                }
+                return { goToGame, goToRewards };
             }
         });
 

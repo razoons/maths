@@ -53,11 +53,9 @@
             </v-main>
             <v-dialog v-model="showDialog" persistent>
                 <v-card class="rounded-xl pa-8" color="pink-darken-1 accent-4">
-                    <v-card-title class="text-h1 text-center font-kid">
-                        Bravo!
-                    </v-card-title>
-
                     <v-card-text class="text-center text-h2 font-kid">
+                        <span class="text-center text-h1 font-kid">Bravo!</span>
+                        <br />
                         Ton score: <strong>{{ score }}</strong> / {{ nbrQuestions }}
                     </v-card-text>
 
@@ -83,7 +81,7 @@
         const params = new URLSearchParams(window.location.search);
         const difficulty = params.get("difficulty");
         const operation = params.get("operation");
-        const nbrQuestions = 20;
+        const nbrQuestions = 2;
 
 
         const app = createApp({
@@ -96,10 +94,10 @@
                 const score = ref(0);
                 const progress = computed(() => (currentQuestion.value / nbrQuestions * 100)); // percent (0 - 100)
                 const showDialog = ref(false);
+                let correctAnswerTemp = 0;
 
                 function generateProblem() {
                     currentQuestion.value++;
-                    let num1, num2;
                     if (operation == 'addition') {
                         if (difficulty == 'facile') {
                             // Easy addition: numbers between 1 and 9
@@ -118,21 +116,8 @@
 
                         }
                         problem.value = `${num1} + ${num2}`;
-                        const correctAnswerTemp = num1 + num2;
-                        correctAnswer.value = correctAnswerTemp;
-                        const incorrectAnswers = new Set();
+                        correctAnswerTemp = num1 + num2;
 
-                        while (incorrectAnswers.size < 3) {
-                            const offset = Math.floor(Math.random() * 3) + 1;
-                            const sign = Math.random() < 0.5 ? -1 : 1;
-                            const wrong = correctAnswerTemp + sign * offset;
-                            if (wrong !== correctAnswerTemp && wrong > 0) {
-                                incorrectAnswers.add(wrong);
-                            }
-                        }
-
-                        const allAnswers = [correctAnswerTemp, ...incorrectAnswers];
-                        responses.value = allAnswers.sort(() => Math.random() - 0.5);
 
                     } else if (operation == 'soustraction') {
                         if (difficulty == 'facile') {
@@ -151,21 +136,8 @@
                             num2 = Math.floor(Math.random() * num1) + 1;
                         }
                         problem.value = `${num1} - ${num2}`;
-                        const correctAnswerTemp = num1 - num2;
-                        correctAnswer.value = correctAnswerTemp;
-                        const incorrectAnswers = new Set();
+                        correctAnswerTemp = num1 - num2;
 
-                        while (incorrectAnswers.size < 3) {
-                            const offset = Math.floor(Math.random() * 3) + 1;
-                            const sign = Math.random() < 0.5 ? -1 : 1;
-                            const wrong = correctAnswerTemp + sign * offset;
-                            if (wrong !== correctAnswerTemp && wrong > 0) {
-                                incorrectAnswers.add(wrong);
-                            }
-                        }
-
-                        const allAnswers = [correctAnswerTemp, ...incorrectAnswers];
-                        responses.value = allAnswers.sort(() => Math.random() - 0.5);
 
                     } else if (operation == 'probleme') {
 
@@ -177,7 +149,7 @@
 
                         const a = Math.floor(Math.random() * 5) + 5;
                         const b = Math.floor(Math.random() * 10) + 1;
-                        const c = Math.min(Math.floor(Math.random() * 10) + 1, a - 1);
+                        const c = Math.floor(Math.random() * a) + 1;
 
                         // Genre
                         const sujet = genre === "m" ? "Il" : "Elle";
@@ -194,23 +166,23 @@
 
                         const probleme_instance = templates[Math.floor(Math.random() * templates.length)];
                         problem.value = probleme_instance.phrase;
-                        const correctAnswerTemp = probleme_instance.resultat;
-                        correctAnswer.value = correctAnswerTemp;
-                        const incorrectAnswers = new Set();
-
-                        while (incorrectAnswers.size < 3) {
-                            const offset = Math.floor(Math.random() * 3) + 1;
-                            const sign = Math.random() < 0.5 ? -1 : 1;
-                            const wrong = correctAnswerTemp + sign * offset;
-                            if (wrong !== correctAnswerTemp && wrong > 0) {
-                                incorrectAnswers.add(wrong);
-                            }
-                        }
-
-                        const allAnswers = [correctAnswerTemp, ...incorrectAnswers];
-                        responses.value = allAnswers.sort(() => Math.random() - 0.5);
-
+                        correctAnswerTemp = probleme_instance.resultat;
                     }
+
+                    correctAnswer.value = correctAnswerTemp;
+                    const incorrectAnswers = new Set();
+
+                    while (incorrectAnswers.size < 3) {
+                        const offset = Math.floor(Math.random() * 3) + 1;
+                        const sign = Math.random() < 0.5 ? -1 : 1;
+                        const wrong = correctAnswerTemp + sign * offset;
+                        if (wrong !== correctAnswerTemp && wrong > 0) {
+                            incorrectAnswers.add(wrong);
+                        }
+                    }
+
+                    const allAnswers = [correctAnswerTemp, ...incorrectAnswers];
+                    responses.value = allAnswers.sort(() => Math.random() - 0.5);
 
                 }
 
@@ -225,6 +197,8 @@
                         selected.value = null;
                         if (currentQuestion.value >= nbrQuestions) {
                             showDialog.value = true;
+
+                            giveRewards(score.value);
 
                         } else {
                             // Generate next problem
@@ -242,6 +216,27 @@
 
                 function backToMenu() {
                     window.location.href = './index.html';
+                }
+
+                function giveRewards(score) {
+                    if (score == 2) {
+                        rewardsWon = 2;
+                    } else if (score >= 1) {
+                        rewardsWon = 1;
+                    } else {
+                        rewardsWon = 0;
+                    }
+
+                    const rewards = JSON.parse(localStorage.getItem("rewards")) || { stars: 0, fairies: 0, unicorns: 0 }
+                    rewards.stars += rewardsWon;
+
+                    rewards.fairies += Math.floor(rewards.stars / 10);
+                    rewards.stars = rewards.stars % 10;
+
+                    rewards.unicorns += Math.floor(rewards.fairies / 10);
+                    rewards.fairies = rewards.fairies % 10;
+
+                    localStorage.setItem("rewards", JSON.stringify(rewards));
                 }
 
                 generateProblem();
